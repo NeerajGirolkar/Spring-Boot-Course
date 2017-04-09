@@ -1,55 +1,40 @@
 package demo.spring.boot.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import demo.spring.boot.repository.TopicRepository;
 import demo.spring.boot.to.Topic;
 
 @Service
 public class TopicService {
 	
-	private List<Topic> topics = new ArrayList<>(Arrays.asList(
-			new Topic("001", "Spring Boot", "Simplest Course on Spring Boot"),
-			new Topic("002", "Hibernate", "Getting started with Hibernate"),
-			new Topic("003", "Java", "This course includes Java 8")
-			));
+	@Autowired
+	private TopicRepository topicRepository;
 	
 	public List<Topic> getAllTopics(){
-		return topics;
+		List<Topic> topicList = new ArrayList<Topic>();
+		topicRepository.findAll().forEach(topicList::add);
+		return topicList;
 	}
 	
 	public Topic getTopic(String id){
-		for(Topic topic : topics){
-			if(topic.getId().equalsIgnoreCase(id)){
-				return topic;				
-			}
-		}
-		return null;
+		return topicRepository.findOne(id);	
 	}
 	
 	public void addTopic(Topic topic) {
-		topics.add(topic);
+		topicRepository.save(topic);
 	}
 	
 	public void updateTopic(Topic updatedTopic, String id) {
-		for(Topic topic : topics){
-			if(topic.getId().equalsIgnoreCase(id)){
-				topics.remove(topic);
-				break;
-			}
-		}
-		topics.add(updatedTopic);
+		topicRepository.delete(id);
+		topicRepository.save(updatedTopic);
 	}
 	
 	public void deleteTopic(String id) {
-		for(Topic topic : topics){
-			if(topic.getId().equalsIgnoreCase(id)){
-				topics.remove(topic);
-				break;
-			}
-		}
+		topicRepository.delete(id);
 	}
 }
